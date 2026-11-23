@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Duck Search</title>
+<style>
+:root{--gelb:#FFD43B;--gd:#F5B700;--or:#FF9F1C;--bg:#FFF9DB;--bg2:#FFFDF5;--card:#fff;--tx:#3d3200;--gr:#8a8467;--ph:#e8e4d0;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--gelb:#E8B923;--gd:#C99A10;--or:#E58A0A;--bg:#1d1a10;--bg2:#25210f;--card:#2f2a16;--tx:#fff6d1;--gr:#b9b18a;--ph:#4a4426;color-scheme:dark}}
+:root[data-theme="dark"]{--gelb:#E8B923;--gd:#C99A10;--or:#E58A0A;--bg:#1d1a10;--bg2:#25210f;--card:#2f2a16;--tx:#fff6d1;--gr:#b9b18a;--ph:#4a4426;color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Segoe UI",Roboto,Arial,sans-serif;background:linear-gradient(180deg,var(--bg),var(--bg2));color:var(--tx);min-height:100vh}
+header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:12px 20px;background:var(--gelb);color:#3d3200;position:sticky;top:env(safe-area-inset-top,0px);z-index:10}
+.logo{font-size:1.5rem;font-weight:800}
+nav button{background:#FFFDF5;color:#3d3200;border:0;padding:10px 16px;margin-left:6px;border-radius:99px;font-weight:700;cursor:pointer}
+nav button.on{background:var(--or);color:#fff}
+main{max-width:1000px;margin:0 auto;padding:24px 16px}
+.page{display:none}.page.on{display:block}
+.c{text-align:center}
+h2{margin-bottom:12px}
+.btn{background:var(--or);color:#fff;border:0;padding:14px 28px;border-radius:99px;font-size:1.1rem;font-weight:800;cursor:pointer;box-shadow:0 5px 0 #8f5400}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 #8f5400}
+.btn:disabled{opacity:.5}
+.btn.k{padding:8px 16px;font-size:.9rem;box-shadow:0 3px 0 #8f5400}
+.pack{width:180px;height:250px;margin:24px auto;border-radius:18px;background:linear-gradient(135deg,var(--gelb),var(--or));box-shadow:0 10px 25px rgba(0,0,0,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:4rem;border:4px solid #fff;color:#3d3200}
+.pack span{font-size:1.1rem;font-weight:800}
+.pack.sh{animation:sh .6s}
+@keyframes sh{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}75%{transform:rotate(-8deg)}}
+.cards{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-top:16px}
+.w{width:155px;height:220px;perspective:900px;cursor:pointer}
+.in{position:relative;width:100%;height:100%;transition:transform .7s;transform-style:preserve-3d}
+.w.open .in{transform:rotateY(180deg)}
+.s{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:14px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,.3)}
+.back{background:repeating-linear-gradient(45deg,var(--gelb),var(--gelb) 12px,var(--gd) 12px,var(--gd) 24px);display:flex;align-items:center;justify-content:center;font-size:3rem;border:4px solid #fff}
+.front{transform:rotateY(180deg);background:var(--card);border:5px solid #9aa0a6;display:flex;flex-direction:column}
+.art{position:absolute;inset:0;background:var(--ph) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:5rem}
+.inf{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);color:#fff;padding:3px 6px;display:flex;justify-content:space-between;align-items:center;gap:4px}
+.nm{font-weight:800;font-size:.68rem}.rt{font-size:.6rem;font-weight:700}
+.front.selten{border-color:#3b82f6}.front.selten .rt{color:#3b82f6}
+.front.sehr-selten{border-color:#a855f7;box-shadow:0 0 18px #a855f7}.front.sehr-selten .rt{color:#a855f7}
+.front.unmoeglich{border-color:#ff3b3b;animation:gl 1.5s infinite alternate}.front.unmoeglich .rt{color:#ff5470}
+@keyframes gl{from{box-shadow:0 0 10px gold}to{box-shadow:0 0 34px #ff3b3b}}
+.leer{opacity:.35;filter:grayscale(1)}
+.hint{color:var(--gr);margin:8px 0}
+.box{background:var(--card);border-radius:16px;padding:18px;box-shadow:0 4px 14px rgba(0,0,0,.12);margin-bottom:18px}
+label{display:block;font-weight:700;margin:10px 0 4px}
+input,select{width:100%;padding:10px;border:2px solid var(--gelb);border-radius:10px;font-size:1rem;background:var(--bg2);color:var(--tx)}
+table{width:100%;border-collapse:collapse}td,th{padding:6px;text-align:left;border-bottom:1px solid var(--ph)}
+.sc{overflow-x:auto}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">🦆 Duck Search</div>
+<nav><button data-p="start" class="on">Packs</button><button data-p="sam">Sammlung</button><button data-p="adm">Admin</button></nav>
+</header>
+<main>
+<section id="start" class="page on c">
+<h2>Öffne ein Pack!</h2>
+<p class="hint">Jedes Pack enthält 4 Karten. Tippe sie an, um sie aufzudecken.</p>
+<div class="pack" id="pack">🦆<span>Duck Pack</span></div>
+<button class="btn" id="go">Pack öffnen</button>
+<div class="cards" id="res"></div>
+</section>
+<section id="sam" class="page">
+<h2>Meine Sammlung <span id="cnt"></span></h2>
+<div class="cards" id="sc"></div>
+</section>
+<section id="adm" class="page">
+<h2>Admin</h2>
+<div class="box">
+<h3>Neue Karte</h3>
+<label>Name</label><input id="n" placeholder="z. B. Feuer-Ente">
+<label>Seltenheit</label>
+<select id="r"><option value="gewoehnlich">Gewöhnlich</option><option value="selten">Selten</option><option value="sehr-selten">Sehr selten</option><option value="unmoeglich">Unmöglich</option></select>
+<label>Bild (aus Fotos oder Dateien)</label><input id="f" type="file" accept="image/*">
+<p style="margin-top:12px"><button class="btn k" id="add">Karte hinzufügen</button></p>
+<p class="hint">Neue Karten werden auf diesem Gerät gespeichert und bleiben nach dem Neuladen erhalten.</p>
+</div>
+<div class="box"><h3>Alle Karten</h3><div class="sc"><table id="tb"></table></div></div>
+<div class="box"><h3>Wahrscheinlichkeiten</h3><p class="hint">Höhere Zahl = häufiger.</p><div id="gw"></div></div>
+<div class="box"><button class="btn k" id="reset" style="background:#777;box-shadow:0 3px 0 #444">Sammlung zurücksetzen</button></div>
+</section>
+</main>
+<script>
+const SN={"gewoehnlich":"Gewöhnlich","selten":"Selten","sehr-selten":"Sehr selten","unmoeglich":"Unmöglich"};
+const STD={"gewoehnlich":70,"selten":22,"sehr-selten":7.92,"unmoeglich":0.08};
+const PER=4;
+// Platzhalterkarten: hier später eure echten Karten eintragen
+const BASIS=[
+{name:"Pfützen-Ente",r:"gewoehnlich"},{name:"Brot-Ente",r:"gewoehnlich"},
+{name:"Teich-Ente",r:"selten"},{name:"Gold-Ente",r:"sehr-selten"},
+{name:"Kristall-Ente",r:"sehr-selten"},{name:"Urzeit-Ente",r:"unmoeglich"}];
+function ld(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+let custom=ld("ds_custom",[]),gew=Object.assign({},STD,ld("ds_gew",{})),sam=ld("ds_sam",{});
+const all=()=>BASIS.concat(custom);
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+let db=null,uid=null,canEdit=false;
+function reDraw(){if($("sam").classList.contains("on"))showSam();if($("adm").classList.contains("on"))showAdm()}
+function saveSam(){sv("ds_sam",sam);if(db&&uid)db.doc("data/users/"+uid+"/sam").set(sam).catch(()=>{})}
+
+function card(k,back,open){
+ const bg=k.img?`style="background-image:url(${k.img})"`:"";
+ return `<div class="w ${open?"open":""}"><div class="in">${back?'<div class="s back">🦆</div>':""}<div class="s front ${k.r}"><div class="art" ${bg}>${k.img?"":"🦆"}</div><div class="inf"><div class="nm">${esc(k.name)}</div><div class="rt">${SN[k.r]}</div></div></div></div></div>`;
+}
+const wt=k=>gew[k.r]/all().filter(x=>x.r===k.r).length;
+function draw(){const a=all();let t=a.reduce((s,k)=>s+wt(k),0),x=Math.random()*t;for(const k of a){x-=wt(k);if(x<=0)return k}return a[a.length-1]}
+$("go").onclick=()=>{
+ const b=$("go"),p=$("pack");b.disabled=true;p.classList.add("sh");$("res").innerHTML="";
+ setTimeout(()=>{
+  p.classList.remove("sh");
+  const g=Array.from({length:PER},draw);
+  $("res").innerHTML=g.map(k=>card(k,true,false)).join("");
+  document.querySelectorAll("#res .w").forEach((el,i)=>el.onclick=()=>{
+   if(el.classList.contains("open"))return;
+   el.classList.add("open");sam[g[i].name]=(sam[g[i].name]||0)+1;saveSam();
+  });
+  b.disabled=false;b.textContent="Noch ein Pack öffnen";
+ },650);
+};
+function showSam(){
+ const a=all();$("cnt").textContent="("+a.filter(k=>sam[k.name]).length+" von "+a.length+")";
+ $("sc").innerHTML=a.map(k=>{const n=sam[k.name]||0;return `<div class="c ${n?"":"leer"}">${card(k,false,true)}<b>${n?n+"×":"???"}</b></div>`}).join("");
+}
+function showAdm(){
+ $("tb").innerHTML="<tr><th>Name</th><th>Seltenheit</th><th></th></tr>"+all().map((k,i)=>`<tr><td>${esc(k.name)}</td><td>${SN[k.r]}</td><td>${i>=BASIS.length?`<button class="btn k" data-d="${i-BASIS.length}" style="background:#c01e44;box-shadow:0 3px 0 #700">Löschen</button>`:""}</td></tr>`).join("");
+ document.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>{const k=custom[+b.dataset.d];if(!confirm("Karte wirklich löschen?"))return;if(db&&k.id)db.doc("cards/"+k.id).delete().catch(()=>alert("Löschen hat nicht geklappt."));else{custom.splice(+b.dataset.d,1);sv("ds_custom",custom);showAdm()}});
+ $("gw").innerHTML=Object.keys(SN).map(s=>`<label>${SN[s]}</label><input type="number" step="0.01" min="0" value="${gew[s]}" data-g="${s}" ${db&&!canEdit?"disabled":""}>`).join("");
+ document.querySelectorAll("[data-g]").forEach(i=>i.onchange=()=>{gew[i.dataset.g]=parseFloat(i.value)||0;sv("ds_gew",gew);if(db&&canEdit)db.doc("settings/weights").set(gew).catch(()=>{})});
+}
+function shrink(file){return new Promise(res=>{
+ const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{
+  const s=Math.min(1,400/Math.max(im.width,im.height)),c=document.createElement("canvas");
+  c.width=im.width*s;c.height=im.height*s;c.getContext("2d").drawImage(im,0,0,c.width,c.height);
+  res(c.toDataURL("image/jpeg",.8))};im.src=fr.result};fr.readAsDataURL(file)})}
+$("add").onclick=async()=>{
+ const n=$("n").value.trim();if(!n)return alert("Bitte einen Namen eingeben.");
+ const f=$("f").files[0],k={name:n,r:$("r").value};
+ if(f)k.img=await shrink(f);
+ if(db)db.collection("cards").add(k).catch(()=>alert("Speichern hat nicht geklappt. Du brauchst dafür Bearbeiten-Rechte auf der Seite."));else{custom.push(k);sv("ds_custom",custom)}$("n").value="";$("f").value="";showAdm();
+};
+$("reset").onclick=()=>{if(confirm("Sammlung wirklich löschen?")){sam={};saveSam()}};
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+ document.querySelectorAll("nav button,.page").forEach(x=>x.classList.remove("on"));
+ b.classList.add("on");$(b.dataset.p).classList.add("on");
+ if(b.dataset.p==="sam")showSam();if(b.dataset.p==="adm")showAdm();
+});
+</script>
+</body>
+</html>
