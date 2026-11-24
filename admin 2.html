@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Duck Search</title>
+<style>
+:root{--gelb:#FFD43B;--gd:#F5B700;--or:#FF9F1C;--bg:#FFF9DB;--bg2:#FFFDF5;--card:#fff;--tx:#3d3200;--gr:#8a8467;--ph:#e8e4d0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--gelb:#E8B923;--gd:#C99A10;--or:#E58A0A;--bg:#1d1a10;--bg2:#25210f;--card:#2f2a16;--tx:#fff6d1;--gr:#b9b18a;--ph:#4a4426;color-scheme:dark}}
+:root[data-theme="dark"]{--gelb:#E8B923;--gd:#C99A10;--or:#E58A0A;--bg:#1d1a10;--bg2:#25210f;--card:#2f2a16;--tx:#fff6d1;--gr:#b9b18a;--ph:#4a4426;color-scheme:dark}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:"Segoe UI",Roboto,Arial,sans-serif;background:linear-gradient(180deg,var(--bg),var(--bg2));color:var(--tx);min-height:100vh}
+header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:12px 20px;background:var(--gelb);color:#3d3200;position:sticky;top:env(safe-area-inset-top,0px);z-index:10}
+.logo{font-size:1.5rem;font-weight:800}
+nav button{background:#FFFDF5;color:#3d3200;border:0;padding:10px 16px;margin-left:6px;border-radius:99px;font-weight:700;cursor:pointer}
+nav button.on{background:var(--or);color:#fff}
+main{max-width:1000px;margin:0 auto;padding:24px 16px}
+.page{display:none}.page.on{display:block}
+.c{text-align:center}h2{margin-bottom:12px}
+.btn{background:var(--or);color:#fff;border:0;padding:14px 28px;border-radius:99px;font-size:1.1rem;font-weight:800;cursor:pointer;box-shadow:0 5px 0 #8f5400}
+.btn:active{transform:translateY(4px);box-shadow:0 1px 0 #8f5400}.btn:disabled{opacity:.5}
+.btn.k{padding:8px 16px;font-size:.9rem;box-shadow:0 3px 0 #8f5400}
+.pack{width:180px;height:250px;margin:24px auto;border-radius:18px;background:linear-gradient(135deg,var(--gelb),var(--or));box-shadow:0 10px 25px rgba(0,0,0,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:4rem;border:4px solid #fff;color:#3d3200}
+.pack span{font-size:1.1rem;font-weight:800}
+.pack.sh{animation:sh .6s}
+@keyframes sh{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}75%{transform:rotate(-8deg)}}
+.cards{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-top:16px}
+.w{width:155px;height:220px;perspective:900px;cursor:pointer}
+.in{position:relative;width:100%;height:100%;transition:transform .7s;transform-style:preserve-3d}
+.w.open .in{transform:rotateY(180deg)}
+.s{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:14px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,.3)}
+.back{background:repeating-linear-gradient(45deg,var(--gelb),var(--gelb) 12px,var(--gd) 12px,var(--gd) 24px);display:flex;align-items:center;justify-content:center;font-size:3rem;border:4px solid #fff}
+.front{transform:rotateY(180deg);background:var(--card);border:5px solid #9aa0a6}
+.art{position:absolute;inset:0;background:var(--ph) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:5rem}
+.inf{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);color:#fff;padding:3px 6px;display:flex;justify-content:space-between;align-items:center;gap:4px}
+.nm{font-weight:800;font-size:.68rem}.rt{font-size:.6rem;font-weight:700}
+.front.selten{border-color:#3b82f6}.front.selten .rt{color:#7fb0ff}
+.front.sehr-selten{border-color:#a855f7;box-shadow:0 0 18px #a855f7}.front.sehr-selten .rt{color:#d2a6ff}
+.front.unmoeglich{border-color:#ff3b3b;animation:gl 1.5s infinite alternate}.front.unmoeglich .rt{color:#ff8da1}
+@keyframes gl{from{box-shadow:0 0 10px gold}to{box-shadow:0 0 34px #ff3b3b}}
+.leer{opacity:.35;filter:grayscale(1)}
+.hint{color:var(--gr);margin:8px 0}
+.box{background:var(--card);border-radius:16px;padding:18px;box-shadow:0 4px 14px rgba(0,0,0,.12);margin-bottom:18px}
+label{display:block;font-weight:700;margin:10px 0 4px}
+input,select{width:100%;padding:10px;border:2px solid var(--gelb);border-radius:10px;font-size:1rem;background:var(--bg2);color:var(--tx)}
+table{width:100%;border-collapse:collapse}td,th{padding:6px;text-align:left;border-bottom:1px solid var(--ph)}
+.sc{overflow-x:auto}
+.news{display:none;background:linear-gradient(135deg,var(--gelb),var(--or));color:#3d3200;border-radius:16px;padding:12px 16px;margin:0 auto 16px;max-width:520px;font-weight:700}
+.news b{display:block;font-size:1.1rem}
+</style>
+</head>
+<body>
+<header>
+<div class="logo">🦆 Duck Search – Admin</div>
+<nav><button data-p="start" class="on">Packs</button><button data-p="sam">Sammlung</button><button data-p="adm">Karten</button></nav>
+</header>
+<main>
+<section id="start" class="page on c">
+<div class="news" id="news"></div>
+<h2>Öffne ein Pack!</h2>
+<p class="hint">Jedes Pack enthält 4 Karten. Tippe sie an, um sie aufzudecken.</p>
+<div class="pack" id="pack">🦆<span>Duck Pack</span></div>
+<button class="btn" id="go">Pack öffnen</button>
+<div class="cards" id="res"></div>
+</section>
+<section id="sam" class="page">
+<h2>Meine Sammlung <span id="cnt"></span></h2>
+<div class="cards" id="sc"></div>
+<p class="c" style="margin-top:24px"><button class="btn k" id="reset" style="background:#777;box-shadow:0 3px 0 #444">Sammlung zurücksetzen</button></p>
+</section>
+<section id="adm" class="page">
+<h2>Karten verwalten</h2>
+<div class="box"><h3>Neue Karte</h3>
+<label>Name</label><input id="n" placeholder="z. B. Feuer-Ente">
+<label>Seltenheit</label><select id="r"><option value="gewoehnlich">Gewöhnlich</option><option value="selten">Selten</option><option value="sehr-selten">Sehr selten</option><option value="unmoeglich">Unmöglich</option></select>
+<label>Bild (aus Fotos oder Dateien)</label><input id="f" type="file" accept="image/*">
+<p style="margin-top:12px"><button class="btn k" id="add">Karte hinzufügen</button></p></div>
+<div class="box"><h3>Alle Karten</h3><div class="sc"><table id="tb"></table></div></div>
+<div class="box"><h3>Wahrscheinlichkeiten</h3><p class="hint">Höhere Zahl = häufiger.</p><div id="gw"></div></div>
+<div class="box"><h3>Enten News (Glücks-Event)</h3>
+<label><input type="checkbox" id="evOn" style="width:auto"> Event ist aktiv</label>
+<label>Titel</label><input id="evT" placeholder="Enten News">
+<label>Text</label><input id="evX" placeholder="z. B. Wochenend-Event!">
+<label>Faktor für seltene Karten</label><input id="evF" type="number" min="1" step="1">
+<p class="hint">10 heißt: Selten, Sehr selten und Unmöglich werden 10-mal so wahrscheinlich.</p></div>
+<div class="box"><h3>Fertige Seite für deine Freunde</h3>
+<p class="hint">Lädt eine neue <b>index.html</b> mit allen Karten herunter. Diese Datei lädst du bei GitHub hoch und ersetzt die alte.</p>
+<button class="btn" id="dl">index.html herunterladen</button></div>
+<div class="box"><h3>Karten sichern</h3><p class="hint">Lädt eine <b>admin.html</b> herunter, in der deine Karten schon stehen. Lade sie bei GitHub hoch, dann bleiben die Karten im Admin-Bereich erhalten, auch wenn dein iPad die gespeicherten Daten löscht. Das geht nur, wenn du <b>admin.html</b> über die GitHub-Adresse geöffnet hast.</p><button class="btn k" id="dla">admin.html herunterladen</button></div>
+</section>
+</main>
+<script>
+const SN={"gewoehnlich":"Gewöhnlich","selten":"Selten","sehr-selten":"Sehr selten","unmoeglich":"Unmöglich"};
+const STD={"gewoehnlich":70,"selten":22,"sehr-selten":7.92,"unmoeglich":0.08};
+const PER=4;
+const KARTEN=[];
+const GEWSTART={};
+const EVENTSTART={};
+function ld(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}
+function sv(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
+let cards=KARTEN.slice(),gew=Object.assign({},STD,GEWSTART),sam=ld("ds_sam",{});
+let ev=Object.assign({aktiv:false,titel:"Enten News",text:"",faktor:10},EVENTSTART);
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+function card(k,back,open){
+ const bg=k.img?`style="background-image:url(${k.img})"`:"";
+ return `<div class="w ${open?"open":""}"><div class="in">${back?'<div class="s back">🦆</div>':""}<div class="s front ${k.r}"><div class="art" ${bg}>${k.img?"":"🦆"}</div><div class="inf"><div class="nm">${esc(k.name)}</div><div class="rt">${SN[k.r]}</div></div></div></div></div>`;
+}
+const eff=r=>ev.aktiv&&r!=="gewoehnlich"?gew[r]*ev.faktor:gew[r];
+const wt=k=>eff(k.r)/cards.filter(x=>x.r===k.r).length;
+function draw(){let t=cards.reduce((s,k)=>s+wt(k),0),x=Math.random()*t;for(const k of cards){x-=wt(k);if(x<=0)return k}return cards[cards.length-1]}
+function note(t){let e=$("toast");if(!e){e=document.createElement("div");e.id="toast";e.style.cssText="position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#3d3200;color:#fff;padding:12px 18px;border-radius:12px;font-weight:700;z-index:99;max-width:90%;text-align:center";document.body.appendChild(e)}e.textContent=t;e.style.display="block";clearTimeout(e.t);e.t=setTimeout(()=>{e.style.display="none"},3500)}
+function twice(b,label,fn){if(b.dataset.s){fn();return}b.dataset.s="1";const old=b.textContent;b.textContent=label;setTimeout(()=>{delete b.dataset.s;b.textContent=old},3000)}
+$("go").onclick=()=>{
+ if(!cards.length)return note("Noch keine Karten vorhanden.");
+ const b=$("go"),p=$("pack");b.disabled=true;p.classList.add("sh");$("res").innerHTML="";
+ setTimeout(()=>{
+  p.classList.remove("sh");
+  const g=Array.from({length:PER},draw);
+  $("res").innerHTML=g.map(k=>card(k,true,false)).join("");
+  document.querySelectorAll("#res .w").forEach((el,i)=>el.onclick=()=>{
+   if(el.classList.contains("open"))return;
+   el.classList.add("open");sam[g[i].name]=(sam[g[i].name]||0)+1;sv("ds_sam",sam);
+  });
+  b.disabled=false;b.textContent="Noch ein Pack öffnen";
+ },650);
+};
+function showSam(){
+ $("cnt").textContent="("+cards.filter(k=>sam[k.name]).length+" von "+cards.length+")";
+ $("sc").innerHTML=cards.map(k=>{const n=sam[k.name]||0;return `<div class="c ${n?"":"leer"}">${card(k,false,true)}<b>${n?n+"×":"???"}</b></div>`}).join("");
+}
+$("reset").onclick=function(){twice(this,"Wirklich löschen?",()=>{sam={};sv("ds_sam",sam);showSam()})};
+document.querySelectorAll("nav button").forEach(b=>b.onclick=()=>{
+ document.querySelectorAll("nav button,.page").forEach(x=>x.classList.remove("on"));
+ b.classList.add("on");$(b.dataset.p).classList.add("on");
+ if(b.dataset.p==="sam")showSam();
+ if(b.dataset.p==="adm")showAdm();
+});
+function showNews(){const n=$("news");if(ev.aktiv){n.style.display="block";n.innerHTML="<b>🦆 "+esc(ev.titel)+"</b>"+esc(ev.text)+"<br>Seltene Karten sind jetzt "+ev.faktor+"× wahrscheinlicher!"}else n.style.display="none"}
+showNews();
+
+const PLAYER="\u003c!DOCTYPE html>\n\u003chtml lang=\"de\">\n\u003chead>\n\u003cmeta charset=\"UTF-8\">\n\u003cmeta name=\"viewport\" content=\"width=device-width, initial-scale=1, viewport-fit=cover\">\n\u003ctitle>Duck Search\u003c/title>\n\u003cstyle>\n:root{--gelb:#FFD43B;--gd:#F5B700;--or:#FF9F1C;--bg:#FFF9DB;--bg2:#FFFDF5;--card:#fff;--tx:#3d3200;--gr:#8a8467;--ph:#e8e4d0;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}\n@media (prefers-color-scheme:dark){:root:not([data-theme=\"light\"]){--gelb:#E8B923;--gd:#C99A10;--or:#E58A0A;--bg:#1d1a10;--bg2:#25210f;--card:#2f2a16;--tx:#fff6d1;--gr:#b9b18a;--ph:#4a4426;color-scheme:dark}}\n:root[data-theme=\"dark\"]{--gelb:#E8B923;--gd:#C99A10;--or:#E58A0A;--bg:#1d1a10;--bg2:#25210f;--card:#2f2a16;--tx:#fff6d1;--gr:#b9b18a;--ph:#4a4426;color-scheme:dark}\n*{box-sizing:border-box;margin:0;padding:0}\nbody{font-family:\"Segoe UI\",Roboto,Arial,sans-serif;background:linear-gradient(180deg,var(--bg),var(--bg2));color:var(--tx);min-height:100vh}\nheader{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;padding:12px 20px;background:var(--gelb);color:#3d3200;position:sticky;top:env(safe-area-inset-top,0px);z-index:10}\n.logo{font-size:1.5rem;font-weight:800}\nnav button{background:#FFFDF5;color:#3d3200;border:0;padding:10px 16px;margin-left:6px;border-radius:99px;font-weight:700;cursor:pointer}\nnav button.on{background:var(--or);color:#fff}\nmain{max-width:1000px;margin:0 auto;padding:24px 16px}\n.page{display:none}.page.on{display:block}\n.c{text-align:center}h2{margin-bottom:12px}\n.btn{background:var(--or);color:#fff;border:0;padding:14px 28px;border-radius:99px;font-size:1.1rem;font-weight:800;cursor:pointer;box-shadow:0 5px 0 #8f5400}\n.btn:active{transform:translateY(4px);box-shadow:0 1px 0 #8f5400}.btn:disabled{opacity:.5}\n.btn.k{padding:8px 16px;font-size:.9rem;box-shadow:0 3px 0 #8f5400}\n.pack{width:180px;height:250px;margin:24px auto;border-radius:18px;background:linear-gradient(135deg,var(--gelb),var(--or));box-shadow:0 10px 25px rgba(0,0,0,.3);display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:4rem;border:4px solid #fff;color:#3d3200}\n.pack span{font-size:1.1rem;font-weight:800}\n.pack.sh{animation:sh .6s}\n@keyframes sh{0%,100%{transform:rotate(0)}25%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}75%{transform:rotate(-8deg)}}\n.cards{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-top:16px}\n.w{width:155px;height:220px;perspective:900px;cursor:pointer}\n.in{position:relative;width:100%;height:100%;transition:transform .7s;transform-style:preserve-3d}\n.w.open .in{transform:rotateY(180deg)}\n.s{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:14px;overflow:hidden;box-shadow:0 6px 16px rgba(0,0,0,.3)}\n.back{background:repeating-linear-gradient(45deg,var(--gelb),var(--gelb) 12px,var(--gd) 12px,var(--gd) 24px);display:flex;align-items:center;justify-content:center;font-size:3rem;border:4px solid #fff}\n.front{transform:rotateY(180deg);background:var(--card);border:5px solid #9aa0a6}\n.art{position:absolute;inset:0;background:var(--ph) center/cover no-repeat;display:flex;align-items:center;justify-content:center;font-size:5rem}\n.inf{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.55);color:#fff;padding:3px 6px;display:flex;justify-content:space-between;align-items:center;gap:4px}\n.nm{font-weight:800;font-size:.68rem}.rt{font-size:.6rem;font-weight:700}\n.front.selten{border-color:#3b82f6}.front.selten .rt{color:#7fb0ff}\n.front.sehr-selten{border-color:#a855f7;box-shadow:0 0 18px #a855f7}.front.sehr-selten .rt{color:#d2a6ff}\n.front.unmoeglich{border-color:#ff3b3b;animation:gl 1.5s infinite alternate}.front.unmoeglich .rt{color:#ff8da1}\n@keyframes gl{from{box-shadow:0 0 10px gold}to{box-shadow:0 0 34px #ff3b3b}}\n.leer{opacity:.35;filter:grayscale(1)}\n.hint{color:var(--gr);margin:8px 0}\n.box{background:var(--card);border-radius:16px;padding:18px;box-shadow:0 4px 14px rgba(0,0,0,.12);margin-bottom:18px}\nlabel{display:block;font-weight:700;margin:10px 0 4px}\ninput,select{width:100%;padding:10px;border:2px solid var(--gelb);border-radius:10px;font-size:1rem;background:var(--bg2);color:var(--tx)}\ntable{width:100%;border-collapse:collapse}td,th{padding:6px;text-align:left;border-bottom:1px solid var(--ph)}\n.sc{overflow-x:auto}\n.news{display:none;background:linear-gradient(135deg,var(--gelb),var(--or));color:#3d3200;border-radius:16px;padding:12px 16px;margin:0 auto 16px;max-width:520px;font-weight:700}\n.news b{display:block;font-size:1.1rem}\n\u003c/style>\n\u003c/head>\n\u003cbody>\n\u003cheader>\n\u003cdiv class=\"logo\">🦆 Duck Search\u003c/div>\n\u003cnav>\u003cbutton data-p=\"start\" class=\"on\">Packs\u003c/button>\u003cbutton data-p=\"sam\">Sammlung\u003c/button>\u003c/nav>\n\u003c/header>\n\u003cmain>\n\u003csection id=\"start\" class=\"page on c\">\n\u003cdiv class=\"news\" id=\"news\">\u003c/div>\n\u003ch2>Öffne ein Pack!\u003c/h2>\n\u003cp class=\"hint\">Jedes Pack enthält 4 Karten. Tippe sie an, um sie aufzudecken.\u003c/p>\n\u003cdiv class=\"pack\" id=\"pack\">🦆\u003cspan>Duck Pack\u003c/span>\u003c/div>\n\u003cbutton class=\"btn\" id=\"go\">Pack öffnen\u003c/button>\n\u003cdiv class=\"cards\" id=\"res\">\u003c/div>\n\u003c/section>\n\u003csection id=\"sam\" class=\"page\">\n\u003ch2>Meine Sammlung \u003cspan id=\"cnt\">\u003c/span>\u003c/h2>\n\u003cdiv class=\"cards\" id=\"sc\">\u003c/div>\n\u003cp class=\"c\" style=\"margin-top:24px\">\u003cbutton class=\"btn k\" id=\"reset\" style=\"background:#777;box-shadow:0 3px 0 #444\">Sammlung zurücksetzen\u003c/button>\u003c/p>\n\u003c/section>\n\n\u003c/main>\n\u003cscript>\nconst SN={\"gewoehnlich\":\"Gewöhnlich\",\"selten\":\"Selten\",\"sehr-selten\":\"Sehr selten\",\"unmoeglich\":\"Unmöglich\"};\nconst STD={\"gewoehnlich\":70,\"selten\":22,\"sehr-selten\":7.92,\"unmoeglich\":0.08};\nconst PER=4;\nconst KARTEN=/*CARDS*/[];\nconst GEWSTART=/*GEW*/{};\nconst EVENTSTART=/*EVENT*/{};\nfunction ld(k,d){try{const v=localStorage.getItem(k);return v?JSON.parse(v):d}catch(e){return d}}\nfunction sv(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}\nlet cards=KARTEN.slice(),gew=Object.assign({},STD,GEWSTART),sam=ld(\"ds_sam\",{});\nlet ev=Object.assign({aktiv:false,titel:\"Enten News\",text:\"\",faktor:10},EVENTSTART);\nconst $=id=>document.getElementById(id);\nconst esc=s=>String(s).replace(/[&\u003c>\"]/g,c=>({\"&\":\"&amp;\",\"\u003c\":\"&lt;\",\">\":\"&gt;\",'\"':\"&quot;\"}[c]));\nfunction card(k,back,open){\n const bg=k.img?`style=\"background-image:url(${k.img})\"`:\"\";\n return `\u003cdiv class=\"w ${open?\"open\":\"\"}\">\u003cdiv class=\"in\">${back?'\u003cdiv class=\"s back\">🦆\u003c/div>':\"\"}\u003cdiv class=\"s front ${k.r}\">\u003cdiv class=\"art\" ${bg}>${k.img?\"\":\"🦆\"}\u003c/div>\u003cdiv class=\"inf\">\u003cdiv class=\"nm\">${esc(k.name)}\u003c/div>\u003cdiv class=\"rt\">${SN[k.r]}\u003c/div>\u003c/div>\u003c/div>\u003c/div>\u003c/div>`;\n}\nconst eff=r=>ev.aktiv&&r!==\"gewoehnlich\"?gew[r]*ev.faktor:gew[r];\nconst wt=k=>eff(k.r)/cards.filter(x=>x.r===k.r).length;\nfunction draw(){let t=cards.reduce((s,k)=>s+wt(k),0),x=Math.random()*t;for(const k of cards){x-=wt(k);if(x\u003c=0)return k}return cards[cards.length-1]}\nfunction note(t){let e=$(\"toast\");if(!e){e=document.createElement(\"div\");e.id=\"toast\";e.style.cssText=\"position:fixed;left:50%;bottom:calc(20px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:#3d3200;color:#fff;padding:12px 18px;border-radius:12px;font-weight:700;z-index:99;max-width:90%;text-align:center\";document.body.appendChild(e)}e.textContent=t;e.style.display=\"block\";clearTimeout(e.t);e.t=setTimeout(()=>{e.style.display=\"none\"},3500)}\nfunction twice(b,label,fn){if(b.dataset.s){fn();return}b.dataset.s=\"1\";const old=b.textContent;b.textContent=label;setTimeout(()=>{delete b.dataset.s;b.textContent=old},3000)}\n$(\"go\").onclick=()=>{\n if(!cards.length)return note(\"Noch keine Karten vorhanden.\");\n const b=$(\"go\"),p=$(\"pack\");b.disabled=true;p.classList.add(\"sh\");$(\"res\").innerHTML=\"\";\n setTimeout(()=>{\n  p.classList.remove(\"sh\");\n  const g=Array.from({length:PER},draw);\n  $(\"res\").innerHTML=g.map(k=>card(k,true,false)).join(\"\");\n  document.querySelectorAll(\"#res .w\").forEach((el,i)=>el.onclick=()=>{\n   if(el.classList.contains(\"open\"))return;\n   el.classList.add(\"open\");sam[g[i].name]=(sam[g[i].name]||0)+1;sv(\"ds_sam\",sam);\n  });\n  b.disabled=false;b.textContent=\"Noch ein Pack öffnen\";\n },650);\n};\nfunction showSam(){\n $(\"cnt\").textContent=\"(\"+cards.filter(k=>sam[k.name]).length+\" von \"+cards.length+\")\";\n $(\"sc\").innerHTML=cards.map(k=>{const n=sam[k.name]||0;return `\u003cdiv class=\"c ${n?\"\":\"leer\"}\">${card(k,false,true)}\u003cb>${n?n+\"×\":\"???\"}\u003c/b>\u003c/div>`}).join(\"\");\n}\n$(\"reset\").onclick=function(){twice(this,\"Wirklich löschen?\",()=>{sam={};sv(\"ds_sam\",sam);showSam()})};\ndocument.querySelectorAll(\"nav button\").forEach(b=>b.onclick=()=>{\n document.querySelectorAll(\"nav button,.page\").forEach(x=>x.classList.remove(\"on\"));\n b.classList.add(\"on\");$(b.dataset.p).classList.add(\"on\");\n if(b.dataset.p===\"sam\")showSam();\n if(b.dataset.p===\"adm\")showAdm();\n});\nfunction showNews(){const n=$(\"news\");if(ev.aktiv){n.style.display=\"block\";n.innerHTML=\"\u003cb>🦆 \"+esc(ev.titel)+\"\u003c/b>\"+esc(ev.text)+\"\u003cbr>Seltene Karten sind jetzt \"+ev.faktor+\"× wahrscheinlicher!\"}else n.style.display=\"none\"}\nshowNews();\n\n\u003c/script>\n\u003c/body>\n\u003c/html>\n";
+(function(){const st=ld("ds_admin",null);if(st&&st.cards){cards=st.cards;gew=Object.assign({},STD,st.gew)}if(st&&st.ev)ev=st.ev;showNews()})();
+function saveAdmin(){sv("ds_admin",{cards:cards,gew:gew,ev:ev})}
+function evInit(){$("evOn").checked=!!ev.aktiv;$("evT").value=ev.titel||"";$("evX").value=ev.text||"";$("evF").value=ev.faktor||10}
+function showAdm(){
+ evInit();
+ $("tb").innerHTML="<tr><th>Name</th><th>Seltenheit</th><th></th></tr>"+cards.map((k,i)=>`<tr><td>${esc(k.name)}</td><td>${SN[k.r]}</td><td><button class="btn k" data-d="${i}" style="background:#c01e44;box-shadow:0 3px 0 #700">Löschen</button></td></tr>`).join("");
+ document.querySelectorAll("[data-d]").forEach(b=>b.onclick=()=>twice(b,"Wirklich?",()=>{cards.splice(+b.dataset.d,1);saveAdmin();showAdm()}));
+ $("gw").innerHTML=Object.keys(SN).map(s=>`<label>${SN[s]}</label><input type="number" step="0.01" min="0" value="${gew[s]}" data-g="${s}">`).join("");
+ document.querySelectorAll("[data-g]").forEach(i=>i.onchange=()=>{gew[i.dataset.g]=parseFloat(i.value)||0;saveAdmin()});
+}
+function shrink(file){return new Promise(res=>{const fr=new FileReader();fr.onload=()=>{const im=new Image();im.onload=()=>{const s=Math.min(1,420/Math.max(im.width,im.height)),c=document.createElement("canvas");c.width=im.width*s;c.height=im.height*s;c.getContext("2d").drawImage(im,0,0,c.width,c.height);res(c.toDataURL("image/jpeg",.78))};im.src=fr.result};fr.readAsDataURL(file)})}
+$("add").onclick=async()=>{
+ const n=$("n").value.trim();if(!n)return note("Bitte einen Namen eingeben.");
+ if(cards.some(k=>k.name===n))return note("Eine Karte mit diesem Namen gibt es schon.");
+ const f=$("f").files[0],k={name:n,r:$("r").value};if(f)k.img=await shrink(f);
+ cards.push(k);saveAdmin();$("n").value="";$("f").value="";showAdm();
+};
+["evOn","evT","evX","evF"].forEach(id=>$(id).onchange=()=>{ev={aktiv:$("evOn").checked,titel:$("evT").value,text:$("evX").value,faktor:parseFloat($("evF").value)||1};saveAdmin();showNews()});
+$("dl").onclick=()=>{
+ const cj=JSON.stringify(cards).replace(/</g,"\\u003c"),gj=JSON.stringify(gew);
+ const out=PLAYER.replace("/*CARDS*/[]",()=>cj).replace("/*GEW*/{}",()=>gj).replace("/*EVENT*/{}",()=>JSON.stringify(ev)).replace("/*ADMINTAG*/","");
+ const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([out],{type:"text/html"}));a.download="index.html";document.body.appendChild(a);a.click();a.remove();
+};
+$("dla").onclick=async()=>{
+ try{
+  const r=await fetch(location.pathname,{cache:"no-store"});if(!r.ok)throw 0;let t=await r.text();
+  t=t.replace(/^const KARTEN=.*;$/m,()=>"const KARTEN="+JSON.stringify(cards).replace(/</g,"\\u003c")+";").replace(/^const GEWSTART=.*;$/m,()=>"const GEWSTART="+JSON.stringify(gew)+";").replace(/^const EVENTSTART=.*;$/m,()=>"const EVENTSTART="+JSON.stringify(ev).replace(/</g,"\\u003c")+";");
+  const a=document.createElement("a");a.href=URL.createObjectURL(new Blob([t],{type:"text/html"}));a.download="admin.html";document.body.appendChild(a);a.click();a.remove();
+ }catch(e){note("Das geht nur, wenn du admin.html über die GitHub-Adresse öffnest.")}
+};
+
+</script>
+</body>
+</html>
